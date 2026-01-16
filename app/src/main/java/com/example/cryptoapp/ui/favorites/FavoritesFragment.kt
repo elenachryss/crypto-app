@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.cryptoapp.data.storage.database.DbProvider
 import com.example.cryptoapp.data.model.Coin
-import com.example.cryptoapp.data.store.CoinsStore
-import com.example.cryptoapp.data.store.FavoritesStore
+import com.example.cryptoapp.data.storage.CoinsStore
 import com.example.cryptoapp.databinding.FragmentCoinListBinding
 import com.example.cryptoapp.ui.adapter.CoinAdapter
 import com.example.cryptoapp.ui.details.CoinDetailsActivity
@@ -68,17 +68,25 @@ class FavoritesFragment : Fragment() {
 
     //fun που βρισκει favorite και τα δειχνει
     private fun showFavorites() {
-        val fav = FavoritesStore.getAll()
+
         val allCoins = CoinsStore.getCoins()
 
-        //τα φιλτραρει ολα και κραταει οσα εχουν symbol μέσα στα favorites
-        val favCoins = allCoins.filter { fav.contains(it.symbol) }
+        //φερνουμε τα favorites απο τη Room σε background thread
+        Thread {
+            val dao = DbProvider.getDb(requireContext()).favoriteDao()
+            val favSymbols = dao.getAllSymbols().toSet()
 
-        // krataei kai gia to search
-        allFavCoins = favCoins
+            //τα φιλτραρει ολα και κραταει οσα εχουν symbol μέσα στα favorites
+            val favCoins = allCoins.filter { favSymbols.contains(it.symbol) }
 
-        //ListAdapter: δεν ξαναφτιαχνουμε adapter, απλα δινουμε τη νεα λιστα
-        adapter.submitList(favCoins)
+            requireActivity().runOnUiThread {
+                // krataei kai gia to search
+                allFavCoins = favCoins
+
+                //ListAdapter: δεν ξαναφτιαχνουμε adapter, απλα δινουμε τη νεα λιστα
+                adapter.submitList(favCoins)
+            }
+        }.start()
     }
 
     //λογικη για φιλτραρισμα (θα την καλει το MainActivity οταν γραφεις στο search)

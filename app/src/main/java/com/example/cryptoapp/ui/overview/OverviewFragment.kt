@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cryptoapp.data.model.Coin
 import com.example.cryptoapp.data.model.MarketCoinDto
 import com.example.cryptoapp.data.network.RetrofitClient
-import com.example.cryptoapp.data.store.CoinsStore
+import com.example.cryptoapp.data.storage.CoinsStore
 import com.example.cryptoapp.databinding.FragmentCoinListBinding
 import com.example.cryptoapp.ui.adapter.CoinAdapter
 import com.example.cryptoapp.ui.details.CoinDetailsActivity
@@ -89,7 +89,7 @@ class OverviewFragment : Fragment() {
         //δείξε το spinner όταν κάνεις fetch
         binding.swipeRefresh.isRefreshing = true
 
-        //Κάνεις το API call (enqueue = το εκτελεί ασύγχρονα)
+        //Κάνει το API call (enqueue = το εκτελεί ασύγχρονα)
         RetrofitClient.api.getMarkets().enqueue(object : Callback<List<MarketCoinDto>> {
             //οταν ερθει το αποτελεσμα θα καλεσει ενα απο τα δυο
 
@@ -146,7 +146,7 @@ class OverviewFragment : Fragment() {
         })
     }
 
-    //λογικη για φιλτραρισμα
+    //λογικη για φιλτραρισμα την λιστα με τα coins poy εμφανιζεται στην overview otan kanoume search
     fun filterCoins(query: String) {
         if (!this::adapter.isInitialized) return
 

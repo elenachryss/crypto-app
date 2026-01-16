@@ -8,7 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cryptoapp.data.model.Coin
 import com.example.cryptoapp.databinding.HolderCoinBinding
 
-//Φτιάχνουμε έναν Adapter
+//Φτιάχνουμε έναν Adapter που
+//παίρνει Coin αντικείμενα
+//τα μετατρέπει σε γραμμές λίστας
+//και λέει στο RecyclerView πώς να τα δείξει και πώς να αντιδρά στο click
 class CoinAdapter(
 //    //Του δίνουμε μια λίστα: List<Coin>
 //    private val items: List<Coin>,
@@ -17,46 +20,28 @@ class CoinAdapter(
     private val onItemClick: (Coin) -> Unit
 ) : ListAdapter<Coin, CoinAdapter.CoinViewHolder>(DIFF) {
 
-//    //Αυτό είναι το κουτάκι ενός item.
-//    class CoinViewHolder(
-//        val binding: HolderCoinBinding
-//    ) : RecyclerView.ViewHolder(binding.root)
-
-
     //Φτιάξε ένα καινούργιο row όταν το RecyclerView το χρειαστεί
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CoinViewHolder {
-        //“πάρε το holder_coin.xml”
-        //“κάν’ το View”
+        //πάρε το holder_coin.xml
+        //κάν’ το View
         val binding = HolderCoinBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         )
-        //“βάζ’ το μέσα σε ViewHolder”
+        //μέσα σε ViewHolder
         return CoinViewHolder(binding)
     }
 
 
+    //γεμισμα δεδομενων σε κάθε γραμμή του RecyclerView
     override fun onBindViewHolder(holder: CoinViewHolder, position: Int) {
-//        //Για αυτό το row, βάλε τα σωστά δεδομένα
-//        val item = items[position]
 
         val coin = getItem(position)
         holder.bind(coin)
-
-
-//        //γεμισμα της λιστας
-//        holder.binding.tvName.text = item.name
-//        holder.binding.tvSymbol.text = item.symbol
-//        holder.binding.tvPrice.text = item.price
-//        holder.binding.tvChange.text = item.change24h
-//
-//        //kanei to klik
-//        holder.binding.root.setOnClickListener {
-//            onItemClick(item)
-//        }
     }
 
+    //Η γραμμή της λίστας
     inner class CoinViewHolder(private val binding: HolderCoinBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -72,6 +57,9 @@ class CoinAdapter(
         }
     }
 
+    //συγκριση dyo coins αφου βαλαμε γιατι βαλαμε το ListAdapter
+    //Το DiffUtil είναι υποχρεωτικό όταν βαζουμε ListAdapter.
+    //Είναι ο κανόνας σύγκρισης παλιάς και νέας λίστας
     companion object {
         private val DIFF = object : DiffUtil.ItemCallback<Coin>() {
             override fun areItemsTheSame(oldItem: Coin, newItem: Coin): Boolean {
@@ -86,7 +74,4 @@ class CoinAdapter(
         }
     }
 
-//    override fun getItemCount(): Int {
-//        return items.size
-//    }
 }

@@ -32,14 +32,14 @@ class MainActivity : AppCompatActivity() {
         }.attach()
     }
 
-    //λογικη για φιλτερινκγ
+    //λογικη για search
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_dashboard, menu)
 
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem.actionView as SearchView
 
-        searchView.queryHint = "Search coins..."
+        searchView.queryHint = "Search"
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    //filtrarei kai ta dyo
+    //search kai ta dyo
     private fun sendSearchQuery(query: String) {
         pagerAdapter.getOverviewFragment().filterCoins(query)
         pagerAdapter.getFavoritesFragment().filterCoins(query)

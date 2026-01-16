@@ -3,7 +3,7 @@ package com.example.cryptoapp.data.model
 import com.google.gson.annotations.SerializedName
 
 //1. φτιαχνω το dto
-//@SerializedName Επειδή στο JSON τα keys είναι π.χ. "current_price" αλλά εσύ θες Kotlin property currentPrice
+//@SerializedName Επειδή στο JSON τα keys είναι π.χ. current_price αλλά θελουμε Kotlin property currentPrice
 data class MarketCoinDto(
     @SerializedName("name") val name: String,
     @SerializedName("symbol") val symbol: String,

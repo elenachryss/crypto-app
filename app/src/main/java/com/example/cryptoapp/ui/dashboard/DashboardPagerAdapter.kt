@@ -6,6 +6,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.cryptoapp.ui.favorites.FavoritesFragment
 import com.example.cryptoapp.ui.overview.OverviewFragment
 
+//Adapter που διαχειρίζεται τα fragments του dashboard pager
+//αποφασίζει ποιο Fragment θα εμφανιστεί σε κάθε tab του dashboard.
 class DashboardPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
 
     //κραταμε τα fragments σαν μεταβλητες για να μπορει το MainActivity να τα βρει σιγουρα

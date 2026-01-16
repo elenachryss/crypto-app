@@ -1,4 +1,4 @@
-package com.example.cryptoapp.data.store
+package com.example.cryptoapp.data.storage
 
 import com.example.cryptoapp.data.model.Coin
 
