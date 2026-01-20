@@ -33,7 +33,6 @@ class OverviewFragment : Fragment() {
     //adapter (ListAdapter) -> τον φτιαχνουμε 1 φορα και μετα αλλαζουμε τη λιστα με submitList
     private lateinit var adapter: CoinAdapter
 
-    //αυτα απλα κανουν φορματ τους αριθμους.
     private fun formatPriceUsd(price: Double): String {
         return "$" + String.format("%,.2f", price)
     }
@@ -60,13 +59,14 @@ class OverviewFragment : Fragment() {
         //tα items να μπαίνουν κάθετα, σαν λίστα
         binding.rvCoins.layoutManager = LinearLayoutManager(requireContext())
 
-        //φτιαχνουμε τον adapter 1 φορα (click: ανοίγει details)
+        //φτιαχνουμε τον adapter 1 φορα
         adapter = CoinAdapter { coin ->
             val intent = Intent(requireContext(), CoinDetailsActivity::class.java)
             intent.putExtra("name", coin.name)
             intent.putExtra("symbol", coin.symbol)
             intent.putExtra("price", coin.price)
             intent.putExtra("change", coin.change24h)
+            intent.putExtra("image", coin.image)
             startActivity(intent)
         }
 
@@ -75,15 +75,27 @@ class OverviewFragment : Fragment() {
 
         //swipe down -> refresh
         binding.swipeRefresh.setOnRefreshListener {
-            fetchCoins()
+            // οταν κανει swipe down θελουμε ΠΑΝΤΑ να καλεσει API
+            fetchCoins(forceRefresh = true)
         }
 
-        //πρωτη φορα που ανοιγει το fragment, φερνουμε τα coins
-        fetchCoins()
+        //πρωτη φορα που ανοιγει το fragment:
+        // 1) αν εχουμε ηδη coins στο store (cache) -> τα δειχνουμε χωρις API
+        // 2) αλλιως -> κανουμε API call 1 φορα
+        val cached = CoinsStore.getCoins()
+        if (cached.isNotEmpty()) {
+            allCoins = cached
+            adapter.submitList(cached)
+        } else {
+            fetchCoins(forceRefresh = false)
+        }
     }
 
     //εδω ειναι το API call, για να το καλουμε και στην αρχη και στο swipe refresh
-    private fun fetchCoins() {
+    private fun fetchCoins(forceRefresh: Boolean) {
+        // αν ΔΕΝ ειναι swipe refresh και εχουμε ηδη δεδομενα, δεν ξανακαλουμε το API
+        if (!forceRefresh && CoinsStore.getCoins().isNotEmpty()) return
+
         Log.d("API", "Starting API call...")
 
         //δείξε το spinner όταν κάνεις fetch
@@ -91,7 +103,6 @@ class OverviewFragment : Fragment() {
 
         //Κάνει το API call (enqueue = το εκτελεί ασύγχρονα)
         RetrofitClient.api.getMarkets().enqueue(object : Callback<List<MarketCoinDto>> {
-            //οταν ερθει το αποτελεσμα θα καλεσει ενα απο τα δυο
 
             override fun onResponse(
                 call: Call<List<MarketCoinDto>>,
@@ -120,11 +131,13 @@ class OverviewFragment : Fragment() {
                         name = dto.name,
                         symbol = dto.symbol.uppercase(),
                         price = formatPriceUsd(dto.currentPrice),
-                        change24h = formatPercent(dto.change24h)
+                        change24h = formatPercent(dto.change24h),
+                        change24hValue= dto.change24h,
+                        image = dto.image ?: ""
                     )
                 }
 
-                //setaroume ta coins apo to response stin lista (cache) για να τα βλεπει και το FavoritesFragment
+                //setaroume ta coins apo to response stin lista για να τα βλεπει και το FavoritesFragment
                 CoinsStore.setCoins(coins)
 
                 //κραταμε ολα τα coins για το search filter
@@ -165,7 +178,7 @@ class OverviewFragment : Fragment() {
         adapter.submitList(filtered.toList())
     }
 
-    //παντα το γραφουμε σε fragments giati Καθαρίζει το binding + Αποφεύγουμε memory leaks
+    //παντα το γραφουμε σε fragments giati Καθαρίζει το binding
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

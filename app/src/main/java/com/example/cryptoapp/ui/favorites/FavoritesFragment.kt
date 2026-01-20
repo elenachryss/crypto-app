@@ -41,6 +41,9 @@ class FavoritesFragment : Fragment() {
     //στηνει τον adapter 1 φορα και καλει τη showFavorites() για να γεμίσει δεδομένα
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.rvCoins.layoutManager = LinearLayoutManager(requireContext())
+        // δεν θελουμε swipe down refresh στα favorites
+        binding.swipeRefresh.isEnabled = false
+        binding.swipeRefresh.isRefreshing = false
 
         //φτιαχνουμε τον adapter 1 φορα (click: ανοίγει details)
         adapter = CoinAdapter { coin ->
@@ -59,7 +62,7 @@ class FavoritesFragment : Fragment() {
     }
 
     //αυτο καλειται κάθε φορά που επιστρέφεις στο tab Favorite γιατι
-    //Μπορεί να έβαλες/έβγαλες favorites στα details
+    //Μπορεί να βγαλεις/βαλεις favorites στα details
     //Θέλουμε η λίστα να ανανεώνεται
     override fun onResume() {
         super.onResume()
@@ -89,7 +92,7 @@ class FavoritesFragment : Fragment() {
         }.start()
     }
 
-    //λογικη για φιλτραρισμα (θα την καλει το MainActivity οταν γραφεις στο search)
+    //λογικη για φιλτραρισμα (θα την καλει το MainActivity οταν γραφoyme στο search)
     fun filterCoins(query: String) {
         if (!this::adapter.isInitialized) return
 

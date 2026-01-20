@@ -1,69 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="50dp">
+    android:layout_height="match_parent">
+
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_coin_details"
+        app:title="Details"
+        app:titleTextColor="@android:color/white" />
 
     <ImageView
-        android:id="@+id/ivIcon"
+        android:id="@+id/ivCoin"
         android:layout_width="64dp"
         android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
         android:src="@mipmap/ic_launcher"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <TextView
         android:id="@+id/tvName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="16dp"
         android:textSize="22sp"
-        android:text="Bitcoin"
-        app:layout_constraintTop_toTopOf="@id/ivIcon"
-        app:layout_constraintStart_toEndOf="@id/ivIcon"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="12dp"/>
+        app:layout_constraintStart_toEndOf="@id/ivCoin"
+        app:layout_constraintTop_toTopOf="@id/ivCoin"
+        tools:text="Bitcoin" />
 
     <TextView
         android:id="@+id/tvSymbol"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="BTC"
-        app:layout_constraintTop_toBottomOf="@id/tvName"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/tvName"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/tvName"
+        tools:text="BTC" />
 
     <TextView
         android:id="@+id/tvPrice"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
         android:textSize="28sp"
-        android:text="$43,210"
-        app:layout_constraintTop_toBottomOf="@id/ivIcon"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="20dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivCoin"
+        tools:text="$43,210" />
 
     <TextView
         android:id="@+id/tvChange"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="+2.5% (24h)"
-        app:layout_constraintTop_toBottomOf="@id/tvPrice"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"/>
-    
-    <ImageView
-        android:id="@+id/ivFavorite"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:src="@android:drawable/btn_star_big_off"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvPrice"
+        tools:text="+2.5% (24h)" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.cryptoapp.data.model.Coin
 import com.example.cryptoapp.databinding.HolderCoinBinding
 
@@ -50,6 +51,7 @@ class CoinAdapter(
             binding.tvSymbol.text = coin.symbol
             binding.tvPrice.text = coin.price
             binding.tvChange.text = coin.change24h
+            binding.ivIcon.load(coin.image)
 
             binding.root.setOnClickListener {
                 onItemClick(coin)
