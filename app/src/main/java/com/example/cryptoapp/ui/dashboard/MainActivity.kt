@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.commit
 import com.example.cryptoapp.R
 import com.example.cryptoapp.databinding.ActivityDashboardBinding
 import com.example.cryptoapp.ui.favorites.FavoritesFragment
@@ -17,12 +19,12 @@ import com.example.cryptoapp.ui.watchlist.WatchlistFragment
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDashboardBinding
 
-    //κρατάμε τι έχει γράψει στο search
-    private var currentQuery: String = ""
-
     // κρατάμε reference για να το κάνουμε reset όταν αλλάζουμε tab
     private var searchView: SearchView? = null
     private var searchMenuItem: MenuItem? = null
+
+    // Shared ViewModel για το search (το βλεπουν και τα fragments)
+    private val searchViewModel: SearchViewModel by viewModels()
 
     // κραταμε 1 instance απο καθε fragment (να μην ξαναφτιαχνεται καθε φορα)
     private val overviewFragment = OverviewFragment()
@@ -36,20 +38,22 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // gia na mhn akoybaei to layout xvris na valoume padding
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+        // Edge-to-edge
+        // βαζουμε μονο TOP inset στο toolbar για να μην μπαινει κατω απο το status bar
+        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, view.paddingBottom)
             insets
         }
 
         setSupportActionBar(binding.toolbar)
 
-        // Βάζουμε default fragment (Overview) ΜΟΝΟ την πρωτη φορα
+        // Βάζουμε default fragment (Overview) την πρωτη φορα
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, overviewFragment)
-                .commit()
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace(R.id.fragmentContainer, overviewFragment)
+            }
         }
 
         binding.bottomNav.setOnItemSelectedListener { item ->
@@ -60,14 +64,20 @@ class MainActivity : AppCompatActivity() {
                 else -> overviewFragment
             }
 
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, fragment)
-                .commit()
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace(R.id.fragmentContainer, fragment)
+            }
 
             // οταν αλλαζουμε tab θελουμε reset το search
             resetSearch()
 
             true
+        }
+
+        // αν πατησει ξανα το ιδιο tab (optional), κανε reset search / scroll top κτλ
+        binding.bottomNav.setOnItemReselectedListener {
+            resetSearch()
         }
     }
 
@@ -87,69 +97,46 @@ class MainActivity : AppCompatActivity() {
         // ΔΕΝ κρυβουμε το search απο πουθενα
         item.isVisible = true
 
-        //όταν ξαναγίνει inflate το menu, γεμίζουμε το SearchView με το currentQuery
-        if (currentQuery.isNotEmpty()) {
+        // αν υπαρχει ηδη query στο Shared ViewModel, το δειχνουμε στο SearchView
+        val existingQuery = searchViewModel.query.value.orEmpty()
+        if (existingQuery.isNotEmpty()) {
             item.expandActionView()
-            sv.setQuery(currentQuery, false)
+            sv.setQuery(existingQuery, false)
             sv.clearFocus()
         }
 
         sv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-
             override fun onQueryTextSubmit(query: String?): Boolean {
-                val q = query.orEmpty()
-                currentQuery = q
-                sendSearchToCurrentFragment(q)
+                //στελνουμε το query στο Shared ViewModel (και τα fragments θα κανουν observe)
+                searchViewModel.setQuery(query.orEmpty())
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                val q = newText.orEmpty()
-                currentQuery = q
-                sendSearchToCurrentFragment(q)
+                //στελνουμε το query στο Shared ViewModel (και τα fragments θα κανουν observe)
+                searchViewModel.setQuery(newText.orEmpty())
                 return true
             }
         })
 
         // αν πατησει Χ στο search, καθαριζουμε και επαναφερουμε τη λιστα
         sv.setOnCloseListener {
-            currentQuery = ""
-            sendSearchToCurrentFragment("")
+            //καθαριζουμε το query στο Shared ViewModel
+            searchViewModel.clear()
             false
         }
 
         return true
     }
 
-    // στελνουμε filter στο fragment που βλεπει ο χρηστης τωρα (Overview ή Favorites)
-    // (στο watchlist απλα δεν κανει τιποτα προς το παρον)
-    private fun sendSearchToCurrentFragment(query: String) {
-        val current = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-
-        if (current is OverviewFragment) {
-            current.filterCoins(query)
-            return
-        }
-
-        if (current is FavoritesFragment) {
-            current.filterCoins(query)
-            return
-        }
-
-        // αν ειναι Watchlist (ή κατι αλλο), δεν κανουμε κατι ακομα
-    }
-
     // reset search οταν αλλαζουμε (Overview/Favorites/Watchlist)
     private fun resetSearch() {
-        // καθαριζουμε το text που εχει γραψει
-        currentQuery = ""
-
         // κλεινουμε το UI του search και καθαριζουμε το query (αν εχει ηδη δημιουργηθει)
         searchView?.setQuery("", false)
         searchView?.clearFocus()
         searchMenuItem?.collapseActionView()
 
-        // επαναφερουμε τη λιστα στο fragment που φαινεται (Overview ή Favorites)
-        sendSearchToCurrentFragment("")
+        // καθαριζουμε το query στο Shared ViewModel (θα κανει reset τα lists)
+        searchViewModel.clear()
     }
 }

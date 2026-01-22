@@ -5,14 +5,13 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import coil.load
-import com.bumptech.glide.Glide
+import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.cryptoapp.R
-import com.example.cryptoapp.data.storage.database.DbProvider
-import com.example.cryptoapp.data.storage.database.FavoriteCoinEntity
+import com.example.cryptoapp.data.repository.FavoritesRepository
 import com.example.cryptoapp.databinding.ActivityCoinDetailsBinding
 
 class CoinDetailsActivity : AppCompatActivity() {
@@ -23,11 +22,14 @@ class CoinDetailsActivity : AppCompatActivity() {
     //κραταμε το symbol για να το χρησιμοποιουμε στο favorite
     private lateinit var symbol: String
 
-    //κραταμε το state για να αλλαζουμε icon
-    private var isFav: Boolean = false
-
-    //κραταμε reference στο menu item για να αλλαζουμε χρωμα/εικονιδιο
+    //κραταμε reference στο menu item για να αλλαζουμε icon
     private var favMenuItem: MenuItem? = null
+
+    //κραταμε το ΤΕΛΕΥΤΑΙΟ state για να μπορουμε να βαλουμε σωστο icon ακομα κι αν το menu δεν εχει φτιαχτει
+    private var latestIsFav: Boolean = false
+
+    //ViewModel για το details (κραταει state + μιλαει με repository)
+    private lateinit var viewModel: CoinDetailsViewModel
 
     //ti kaleitai otan anoigei h othoni
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +60,6 @@ class CoinDetailsActivity : AppCompatActivity() {
         val change = intent.getStringExtra("change") ?: "-"
         val image = intent.getStringExtra("image") ?: ""
 
-
         // Τα δείχνουμε στο UI γεμιζουμε τα textView
         binding.tvName.text = name
         binding.tvSymbol.text = symbol
@@ -66,32 +67,59 @@ class CoinDetailsActivity : AppCompatActivity() {
         binding.tvChange.text = "$change (24h)"
         binding.ivCoin.load(image)
 
-        //φορτωνουμε αν το coin ειναι ηδη favorite
-        loadFavoriteState()
+        // (προαιρετικο) αν εχεις ImageView για coin icon και εχεις βαλει Coil/Glide θα το γεμισεις εδω
+        // binding.ivCoin.load(image)
+
+        //φτιαχνουμε το ViewModel με Repository (χωρις να βαλουμε MVVM frameworks)
+        val repo = FavoritesRepository(applicationContext)
+        viewModel = ViewModelProvider(
+            this,
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    @Suppress("UNCHECKED_CAST")
+                    return CoinDetailsViewModel(repo) as T
+                }
+            }
+        )[CoinDetailsViewModel::class.java]
+
+        //ακουει το favorite state και ενημερωνει το icon σωστα
+        viewModel.isFavorite.observe(this) { isFav ->
+            latestIsFav = isFav
+
+            //αν εχει ηδη φτιαχτει το menu item, αλλαζουμε icon αμεσα
+            if (favMenuItem != null) {
+                updateFavIcon(isFav)
+            } else {
+                //αλλιως ζηταμε να ξαναφτιαχτει το menu για να παρει το σωστο icon
+                invalidateOptionsMenu()
+            }
+        }
+
+        //φορτωνουμε αρχικο state για να ξερουμε αν ειναι ηδη favorite
+        viewModel.load(symbol)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_coin_details, menu)
 
-        //κραταμε reference στο menu item για να το ενημερωνουμε μετα
+        //κραταμε reference στο item
         favMenuItem = menu.findItem(R.id.action_favorite)
 
-        //βαζουμε το σωστο icon/χρωμα με βαση το state
-        updateFavIcon()
+        //ΜΟΛΙΣ δημιουργηθει το menu, βαζουμε το σωστο icon με βαση το state που ηδη ξερουμε
+        updateFavIcon(latestIsFav)
 
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-
             android.R.id.home -> { // back
                 finish()
                 true
             }
 
-            R.id.action_favorite -> { // click
-                toggleFavorite()
+            R.id.action_favorite -> { // heart click
+                viewModel.toggle(symbol)
                 true
             }
 
@@ -99,49 +127,10 @@ class CoinDetailsActivity : AppCompatActivity() {
         }
     }
 
-    //ελεγχει αν το coin ειναι favorite και ενημερωνει το icon
-    private fun loadFavoriteState() {
-        Thread {
-            val dao = DbProvider.getDb(this).favoriteDao()
-            isFav = dao.exists(symbol) != null
-
-            runOnUiThread {
-                //αν το menu δεν εχει φτιαχτει ακομα, απλα κανουμε refresh οταν φτιαχτει
-                invalidateOptionsMenu()
-            }
-        }.start()
-    }
-
-    //βαζει ή βγαζει το coin απο τα favorites
-    private fun toggleFavorite() {
-        Thread {
-            val dao = DbProvider.getDb(this).favoriteDao()
-
-            if (isFav) {
-                //αν ειναι favorite, το σβηνουμε
-                dao.deleteBySymbol(symbol)
-                isFav = false
-            } else {
-                //αν δεν ειναι, το προσθετουμε
-                dao.insert(FavoriteCoinEntity(symbol))
-                isFav = true
-            }
-
-            runOnUiThread {
-                //αλλαζουμε το icon αναλογα με το νεο state
-                updateFavIcon()
-            }
-        }.start()
-    }
-
-    //ενημερωνει το icon + χρωμα
-    private fun updateFavIcon() {
-        val item = favMenuItem ?: return
-
-        //βαζουμε το ιδιο vector (heart) και αλλαζουμε μονο tint
-        item.setIcon(R.drawable.ic_favorite)
-
-        val colorRes = if (isFav) R.color.purple_200 else android.R.color.white
-        item.icon?.setTint(ContextCompat.getColor(this, colorRes))
+    //αλλαζει το icon αναλογα με το state
+    private fun updateFavIcon(isFav: Boolean) {
+        favMenuItem?.setIcon(
+            if (isFav) R.drawable.ic_favorite_red else R.drawable.ic_favorite
+        )
     }
 }

@@ -72,6 +72,9 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
 
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
