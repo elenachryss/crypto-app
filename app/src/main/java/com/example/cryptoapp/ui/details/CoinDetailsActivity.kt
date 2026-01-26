@@ -36,6 +36,8 @@ class CoinDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+
+
         //Παντα αυτο το γραφουμε Πάρε το XML και φτιαξτο σε view
         binding = ActivityCoinDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -59,6 +61,8 @@ class CoinDetailsActivity : AppCompatActivity() {
         val price = intent.getStringExtra("price") ?: "-"
         val change = intent.getStringExtra("change") ?: "-"
         val image = intent.getStringExtra("image") ?: ""
+
+        println("im on  the $name")
 
         // Τα δείχνουμε στο UI γεμιζουμε τα textView
         binding.tvName.text = name

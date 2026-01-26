@@ -1,8 +1,10 @@
 package com.example.cryptoapp.data.network
 
+import com.example.cryptoapp.data.model.MarketChartResponse
 import com.example.cryptoapp.data.model.MarketCoinDto
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 //2. είναι ένα Retrofit Service Interface:
@@ -26,4 +28,12 @@ interface CoinGeckoApi {
         @Query("page") page: Int = 1,
         @Query("sparkline") sparkline: Boolean = false
     ): Call<List<MarketCoinDto>>
+
+    @GET("coins/{id}/market_chart")
+    suspend fun getCoinMarketChart(
+        @Path("id") coinId: String,       // π.χ. "bitcoin"
+        @Query("vs_currency") currency: String = "usd", // νόμισμα αναφοράς
+        @Query("days") days: String = "10", // 1 = 24 ώρες, 7 = 7 μέρες κτλ.
+        @Query("interval") intervalChart: String = "5m", // available intervals: 5m, hourly, daily
+    ): MarketChartResponse
 }
