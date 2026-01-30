@@ -17,4 +17,9 @@
         android:icon="@drawable/ic_list"
         android:title="Watchlist" />
 
+    <item
+        android:id="@+id/nav_cards"
+        android:icon="@drawable/ic_list"
+        android:title="Overview Cards" />
+
 </menu>

@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.androidx.swiperefreshlayout)
 
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.constraintlayout)
     kapt(libs.androidx.room.compiler)
 
     implementation("io.coil-kt:coil:2.6.0")

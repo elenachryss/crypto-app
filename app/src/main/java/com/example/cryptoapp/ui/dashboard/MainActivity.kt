@@ -13,6 +13,7 @@ import androidx.fragment.app.commit
 import com.example.cryptoapp.R
 import com.example.cryptoapp.databinding.ActivityDashboardBinding
 import com.example.cryptoapp.ui.favorites.FavoritesFragment
+import com.example.cryptoapp.ui.overview.OverviewCardsFragment
 import com.example.cryptoapp.ui.overview.OverviewFragment
 import com.example.cryptoapp.ui.watchlist.WatchlistFragment
 
@@ -30,6 +31,8 @@ class MainActivity : AppCompatActivity() {
     private val overviewFragment = OverviewFragment()
     private val favoritesFragment = FavoritesFragment()
     private val watchlistFragment = WatchlistFragment()
+
+    private val overviewCardsFragment = OverviewCardsFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +64,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home -> overviewFragment
                 R.id.nav_favorites -> favoritesFragment
                 R.id.nav_watchlist -> watchlistFragment
+                R.id.nav_cards -> overviewCardsFragment
                 else -> overviewFragment
             }
 

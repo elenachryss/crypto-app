@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CryptoApp</string>
+    <string name="search">Search</string>
+    <string name="all_coins">All Coins</string>
 </resources>

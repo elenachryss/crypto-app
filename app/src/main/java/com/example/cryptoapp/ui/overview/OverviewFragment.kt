@@ -90,6 +90,10 @@ class OverviewFragment : Fragment() {
             viewModel.filterCoins(query.orEmpty())
         }
 
+        binding.toolbar.setNavigationOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+
         //πρωτη φορα που ανοιγει το fragment:
         // 1) αν εχουμε ηδη coins στο store (cache) -> τα δειχνουμε χωρις API
         // 2) αλλιως -> κανουμε API call 1 φορα
