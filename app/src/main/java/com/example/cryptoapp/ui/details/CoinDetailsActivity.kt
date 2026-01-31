@@ -10,9 +10,17 @@ import coil.load
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import android.graphics.Color
+import androidx.lifecycle.lifecycleScope
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import kotlinx.coroutines.launch
 import com.example.cryptoapp.R
+import com.example.cryptoapp.data.network.RetrofitClient
 import com.example.cryptoapp.data.repository.FavoritesRepository
 import com.example.cryptoapp.databinding.ActivityCoinDetailsBinding
+
 
 class CoinDetailsActivity : AppCompatActivity() {
 
@@ -70,6 +78,16 @@ class CoinDetailsActivity : AppCompatActivity() {
         binding.tvPrice.text = price
         binding.tvChange.text = "$change (24h)"
         binding.ivCoin.load(image)
+
+        binding.detailsBtnOneHour.setOnClickListener {
+            println("1  ωρα details")
+        }
+        binding.detailsBtnFiveHours.setOnClickListener {
+            println("5  ώρες  details")
+        }
+        binding.detailsBtnFiveHours.setOnClickListener {
+            println("1  μέρα details")
+        }
 
         // (προαιρετικο) αν εχεις ImageView για coin icon και εχεις βαλει Coil/Glide θα το γεμισεις εδω
         // binding.ivCoin.load(image)
