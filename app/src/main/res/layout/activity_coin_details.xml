@@ -76,39 +76,42 @@
         app:layout_constraintTop_toBottomOf="@id/tvPrice"
         tools:text="+2.5% (24h)" />
 
-    <Button
-        android:id="@+id/details_btn_one_hour"
-        android:layout_width="0dp"
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="16dp"
-        android:text="@string/details_btn_one_hour"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        app:checkedButton="@+id/details_btn_one_day"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/details_btn_five_hours"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="8dp"
+       >
 
-    <Button
-        android:id="@+id/details_btn_five_hours"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/details_btn_five_hours"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/details_btn_one_day"
-        app:layout_constraintStart_toEndOf="@+id/details_btn_one_hour" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/details_btn_one_hour"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/details_btn_one_hour"
+            />
 
-    <Button
-        android:id="@+id/details_btn_one_day"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/details_btn_one_day"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/details_btn_five_hours" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/details_btn_five_hours"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/details_btn_five_hours" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/details_btn_one_day"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/details_btn_one_day"/>
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
