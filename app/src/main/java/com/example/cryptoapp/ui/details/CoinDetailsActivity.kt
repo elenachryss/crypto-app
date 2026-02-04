@@ -13,6 +13,17 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.cryptoapp.R
 import com.example.cryptoapp.data.repository.FavoritesRepository
 import com.example.cryptoapp.databinding.ActivityCoinDetailsBinding
+import android.content.Intent
+import android.net.Uri
+import android.text.Html
+import android.view.View
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import com.example.cryptoapp.data.network.RetrofitClient
+import com.example.cryptoapp.data.repository.CoinsRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CoinDetailsActivity : AppCompatActivity() {
 
@@ -66,6 +77,13 @@ class CoinDetailsActivity : AppCompatActivity() {
         binding.tvPrice.text = price
         binding.tvChange.text = "$change (24h)"
         binding.ivCoin.load(image)
+        val coinId = name.lowercase()
+
+        if (name != null) {
+            fetchCoinDetails(coinId)
+        } else {
+            Toast.makeText(this, "Error: No Coin ID found", Toast.LENGTH_SHORT).show()
+        }
 
         // (προαιρετικο) αν εχεις ImageView για coin icon και εχεις βαλει Coil/Glide θα το γεμισεις εδω
         // binding.ivCoin.load(image)
@@ -132,5 +150,68 @@ class CoinDetailsActivity : AppCompatActivity() {
         favMenuItem?.setIcon(
             if (isFav) R.drawable.ic_favorite_red else R.drawable.ic_favorite
         )
+    }
+
+    private fun fetchCoinDetails(id: String) {
+        binding.progressBarDetails.visibility = View.VISIBLE
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                // Replace 'RetrofitInstance.api' with your actual Singleton accessor
+                println("This is the id in fetchCoinDetails: $id")
+                val response = RetrofitClient.api.getCoinDetails(id)
+
+                println("This is the response in fetchCoinDetails: $response")
+                withContext(Dispatchers.Main) {
+                    binding.progressBarDetails.visibility = View.GONE
+
+                    if (response.isSuccessful && response.body() != null) {
+                        val data = response.body()!!
+
+                        // 2. Populate Description (Parsing HTML)
+                        // CoinGecko descriptions often contain HTML tags
+                        binding.tvDescription.text = Html.fromHtml(
+                            data.description.en,
+                            Html.FROM_HTML_MODE_COMPACT
+                        )
+
+                        // 3. Handle Website Link
+                        val homepageUrl = data.links.homepage?.firstOrNull { it.isNotEmpty() }
+                        if (!homepageUrl.isNullOrEmpty()) {
+                            binding.btnWebsite.visibility = View.VISIBLE
+                            binding.btnWebsite.setOnClickListener {
+                                openBrowser(homepageUrl)
+                            }
+                        }
+
+                        // 4. Handle Whitepaper Link
+                        val whitepaperUrl = data.links.whitepaper
+                        if (!whitepaperUrl.isNullOrEmpty()) {
+                            binding.btnWhitepaper.visibility = View.VISIBLE
+                            binding.btnWhitepaper.setOnClickListener {
+                                openBrowser(whitepaperUrl)
+                            }
+                        }
+
+                    } else {
+                        Toast.makeText(this@CoinDetailsActivity, "Failed to load details", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    binding.progressBarDetails.visibility = View.GONE
+                    Toast.makeText(this@CoinDetailsActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun openBrowser(url: String) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Cannot open link", Toast.LENGTH_SHORT).show()
+        }
     }
 }
