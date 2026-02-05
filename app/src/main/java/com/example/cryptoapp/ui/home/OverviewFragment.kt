@@ -1,6 +1,5 @@
-package com.example.cryptoapp.ui.overview
+package com.example.cryptoapp.ui.home
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,9 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cryptoapp.databinding.FragmentCoinListBinding
+import com.example.cryptoapp.navigation.CoinDetailsNavigator
 import com.example.cryptoapp.ui.adapter.CoinAdapter
 import com.example.cryptoapp.ui.dashboard.SearchViewModel
-import com.example.cryptoapp.ui.details.CoinDetailsActivity
 
 //ειναι Fragment (αρα θα μπει μεσα σε activity) γιατι ειναι κομματι οθονης. που δειχνει απλα τα coins
 class OverviewFragment : Fragment() {
@@ -48,13 +47,7 @@ class OverviewFragment : Fragment() {
 
         //φτιαχνουμε τον adapter 1 φορα
         adapter = CoinAdapter { coin ->
-            val intent = Intent(requireContext(), CoinDetailsActivity::class.java)
-            intent.putExtra("name", coin.name)
-            intent.putExtra("symbol", coin.symbol)
-            intent.putExtra("price", coin.price)
-            intent.putExtra("change", coin.change24h)
-            intent.putExtra("image", coin.image)
-            startActivity(intent)
+            CoinDetailsNavigator.open(this, coin)
         }
 
         //βαζουμε τον adapter στο RecyclerView (1 φορα)

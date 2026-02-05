@@ -20,7 +20,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.cryptoapp.data.network.RetrofitClient
-import com.example.cryptoapp.data.repository.CoinsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

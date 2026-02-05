@@ -14,8 +14,9 @@ import androidx.fragment.app.commit
 import com.example.cryptoapp.R
 import com.example.cryptoapp.databinding.ActivityDashboardBinding
 import com.example.cryptoapp.ui.favorites.FavoritesFragment
-import com.example.cryptoapp.ui.overview.HomeFragment
-import com.example.cryptoapp.ui.overview.OverviewFragment
+import com.example.cryptoapp.ui.home.HomeFragment
+import com.example.cryptoapp.ui.home.OverviewFragment
+import com.example.cryptoapp.ui.home.TopMoversFragment
 import com.example.cryptoapp.ui.watchlist.WatchlistFragment
 
 class MainActivity : AppCompatActivity() {
@@ -169,6 +170,7 @@ class MainActivity : AppCompatActivity() {
 
         val showArrow = when (currentFragment) {
             is OverviewFragment -> true
+            is TopMoversFragment -> true
             else -> false
         }
 
