@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cryptoapp.databinding.FragmentCoinListBinding
 import com.example.cryptoapp.ui.adapter.CoinAdapter
@@ -26,7 +25,7 @@ class OverviewFragment : Fragment() {
     private lateinit var adapter: CoinAdapter
 
     //ViewModel = κρατάει state (coins/loading/error) για το Overview UI
-    private val viewModel: OverviewViewModel by viewModels()
+    private val viewModel: OverviewViewModel by activityViewModels()
 
     //Shared ViewModel για να παιρνουμε το query του search απο το MainActivity
     private val searchViewModel: SearchViewModel by activityViewModels()
