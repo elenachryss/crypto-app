@@ -14,6 +14,7 @@ import androidx.fragment.app.commit
 import com.example.cryptoapp.R
 import com.example.cryptoapp.databinding.ActivityDashboardBinding
 import com.example.cryptoapp.ui.favorites.FavoritesFragment
+import com.example.cryptoapp.ui.overview.HomeFragment
 import com.example.cryptoapp.ui.overview.OverviewFragment
 import com.example.cryptoapp.ui.watchlist.WatchlistFragment
 
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private val overviewFragment = OverviewFragment()
     private val favoritesFragment = FavoritesFragment()
     private val watchlistFragment = WatchlistFragment()
+    private val homeFragment = HomeFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,20 +51,20 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        // Βάζουμε default fragment (Overview) την πρωτη φορα
+        // Βάζουμε default fragment (Home) την πρωτη φορα
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
                 setReorderingAllowed(true)
-                replace(R.id.fragmentContainer, overviewFragment)
+                replace(R.id.fragmentContainer, homeFragment)
             }
         }
 
         binding.bottomNav.setOnItemSelectedListener { item ->
             val fragment = when (item.itemId) {
-                R.id.nav_home -> overviewFragment
+                R.id.nav_home -> homeFragment
                 R.id.nav_favorites -> favoritesFragment
                 R.id.nav_watchlist -> watchlistFragment
-                else -> overviewFragment
+                else -> homeFragment
             }
 
             supportFragmentManager.commit {
@@ -81,6 +83,10 @@ class MainActivity : AppCompatActivity() {
             resetSearch()
 
             true
+        }
+
+        supportFragmentManager.addOnBackStackChangedListener {
+            updateBackArrow()
         }
 
         // αν πατησει ξανα το ιδιο tab (optional), κανε reset search / scroll top κτλ
@@ -137,6 +143,16 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     // reset search οταν αλλαζουμε (Overview/Favorites/Watchlist)
     private fun resetSearch() {
         // κλεινουμε το UI του search και καθαριζουμε το query (αν εχει ηδη δημιουργηθει)
@@ -146,5 +162,16 @@ class MainActivity : AppCompatActivity() {
 
         // καθαριζουμε το query στο Shared ViewModel (θα κανει reset τα lists)
         searchViewModel.clear()
+    }
+
+    private fun updateBackArrow() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+
+        val showArrow = when (currentFragment) {
+            is OverviewFragment -> true
+            else -> false
+        }
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(showArrow)
     }
 }

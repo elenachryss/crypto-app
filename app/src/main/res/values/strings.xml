@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">CryptoApp</string>
+    <string name="search">Search</string>
+    <string name="all_coins">All Coins</string>
+    <string name="top_movers">Top Movers</string>
+    <string name="gainers">Top Gainers</string>
+    <string name="losers">Top Losers</string>
 </resources>
