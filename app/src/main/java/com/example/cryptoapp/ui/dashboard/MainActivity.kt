@@ -3,6 +3,7 @@ package com.example.cryptoapp.ui.dashboard
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -67,6 +68,13 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace(R.id.fragmentContainer, fragment)
+            }
+
+            // στο Watchlist ΔΕΝ θελουμε να φαινεται το top toolbar
+            binding.toolbar.visibility = if (item.itemId == R.id.nav_watchlist) {
+                View.GONE
+            } else {
+                View.VISIBLE
             }
 
             // οταν αλλαζουμε tab θελουμε reset το search

@@ -13,7 +13,9 @@ object DbProvider {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "crypto_db"
-            ).build()
+            )
+                .fallbackToDestructiveMigration()
+                .build()
         }
         return db!!
     }
