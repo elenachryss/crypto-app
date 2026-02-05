@@ -158,10 +158,8 @@ class CoinDetailsActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 // Replace 'RetrofitInstance.api' with your actual Singleton accessor
-                println("This is the id in fetchCoinDetails: $id")
                 val response = RetrofitClient.api.getCoinDetails(id)
 
-                println("This is the response in fetchCoinDetails: $response")
                 withContext(Dispatchers.Main) {
                     binding.progressBarDetails.visibility = View.GONE
 
