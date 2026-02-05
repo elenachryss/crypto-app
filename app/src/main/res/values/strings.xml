@@ -5,4 +5,7 @@
     <string name="top_movers">Top Movers</string>
     <string name="gainers">Top Gainers</string>
     <string name="losers">Top Losers</string>
+    <string name="about">About</string>
+    <string name="website">Website</string>
+    <string name="whitepaper">Whitepaper</string>
 </resources>
