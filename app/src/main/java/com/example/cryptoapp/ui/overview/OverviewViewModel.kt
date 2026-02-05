@@ -41,10 +41,6 @@ class OverviewViewModel : ViewModel() {
         }
     }
 
-    fun testFunction(){
-        println("test")
-    }
-
     //εδω ειναι το API call, για να το καλουμε και στην αρχη και στο swipe refresh
     fun fetchCoins(forceRefresh: Boolean) {
         // αν ΔΕΝ ειναι swipe refresh και εχουμε ηδη δεδομενα, δεν ξανακαλουμε το API

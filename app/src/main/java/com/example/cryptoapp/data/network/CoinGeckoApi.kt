@@ -4,6 +4,9 @@ import com.example.cryptoapp.data.model.MarketCoinDto
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
+import com.example.cryptoapp.data.models.CoinDetailResponse
+import retrofit2.Response
+import retrofit2.http.Path
 
 //2. είναι ένα Retrofit Service Interface:
 //δηλώνεις endpoints σαν Kotlin functions και
@@ -26,4 +29,9 @@ interface CoinGeckoApi {
         @Query("page") page: Int = 1,
         @Query("sparkline") sparkline: Boolean = false
     ): Call<List<MarketCoinDto>>
+
+    @GET("api/v3/coins/{id}")
+    suspend fun getCoinDetails(
+        @Path("id") coinId: String
+    ): Response<CoinDetailResponse>
 }
