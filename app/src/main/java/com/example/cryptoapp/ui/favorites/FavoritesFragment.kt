@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cryptoapp.data.repository.FavoritesRepository
 import com.example.cryptoapp.data.storage.CoinsStore
 import com.example.cryptoapp.databinding.FragmentCoinListBinding
+import com.example.cryptoapp.navigation.CoinDetailsNavigator
 import com.example.cryptoapp.ui.adapter.CoinAdapter
 import com.example.cryptoapp.ui.dashboard.SearchViewModel
 import com.example.cryptoapp.ui.details.CoinDetailsActivity
@@ -66,13 +67,7 @@ class FavoritesFragment : Fragment() {
 
         //φτιαχνουμε τον adapter 1 φορα (click: ανοίγει details)
         adapter = CoinAdapter { coin ->
-            val intent = Intent(requireContext(), CoinDetailsActivity::class.java)
-            intent.putExtra("name", coin.name)
-            intent.putExtra("symbol", coin.symbol)
-            intent.putExtra("price", coin.price)
-            intent.putExtra("change", coin.change24h)
-            intent.putExtra("image", coin.image)
-            startActivity(intent)
+            CoinDetailsNavigator.open(this, coin)
         }
 
         //βαζουμε τον adapter στο RecyclerView (1 φορα)

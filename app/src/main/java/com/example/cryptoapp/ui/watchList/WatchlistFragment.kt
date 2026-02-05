@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cryptoapp.data.repository.WatchlistRepository
 import com.example.cryptoapp.databinding.DialogWatchlistPickerBinding
 import com.example.cryptoapp.databinding.FragmentWatchlistBinding
+import com.example.cryptoapp.navigation.CoinDetailsNavigator
 import com.example.cryptoapp.ui.adapter.CoinAdapter
 import com.example.cryptoapp.ui.details.CoinDetailsActivity
 
@@ -73,13 +74,7 @@ class WatchlistFragment : Fragment() {
 
         //adapter 1 φορα (click -> ανοίγει details)
         adapter = CoinAdapter { coin ->
-            val intent = Intent(requireContext(), CoinDetailsActivity::class.java)
-            intent.putExtra("name", coin.name)
-            intent.putExtra("symbol", coin.symbol)
-            intent.putExtra("price", coin.price)
-            intent.putExtra("change", coin.change24h)
-            intent.putExtra("image", coin.image)
-            startActivity(intent)
+            CoinDetailsNavigator.open(this, coin)
         }
         binding.rvWatchlist.adapter = adapter
 
